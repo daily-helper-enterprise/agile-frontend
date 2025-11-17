@@ -1,12 +1,15 @@
-import { Sidebar } from "@/components/sidebar";
+"use client";
+
+import { AuthenticatedLayout } from "@/components/authenticated-layout";
+import { useAuth } from "@/contexts/auth-context";
 import { User, Mail, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 export default function ProfilePage() {
-  return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar userRole="scrum-master" />
+  const { user } = useAuth();
 
+  return (
+    <AuthenticatedLayout>
       <div className="flex-1">
         <header className="border-b border-border bg-card">
           <div className="container mx-auto px-6 py-6">
@@ -24,15 +27,19 @@ export default function ProfilePage() {
                 <User className="h-10 w-10 text-primary" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground">John Doe</h2>
-                <p className="text-muted-foreground">Scrum Master</p>
+                <h2 className="text-2xl font-bold text-foreground">
+                  {user?.name}
+                </h2>
+                <p className="text-muted-foreground capitalize">
+                  {user?.role.replace("-", " ")}
+                </p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Mail className="h-5 w-5" />
-                <span>john.doe@example.com</span>
+                <span>{user?.email}</span>
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Calendar className="h-5 w-5" />
@@ -42,6 +49,6 @@ export default function ProfilePage() {
           </Card>
         </main>
       </div>
-    </div>
+    </AuthenticatedLayout>
   );
 }

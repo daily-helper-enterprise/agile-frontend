@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,11 +39,12 @@ export default function RegisterPage() {
 
     setIsLoading(true);
 
-    // mock API call
-    setTimeout(() => {
+    try {
+      await register(name, email, password);
+    } catch (err) {
+      setError("Falha ao criar conta");
       setIsLoading(false);
-      router.push("/");
-    }, 1000);
+    }
   };
 
   return (

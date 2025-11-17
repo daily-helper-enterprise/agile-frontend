@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,21 +15,23 @@ import {
 import Link from "next/link";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await login(email, password);
+    } catch (err) {
+      setError("Invalid email or password");
       setIsLoading(false);
-      // In a real app, validate credentials and set user session
-      router.push("/");
-    }, 1000);
+    }
   };
 
   return (
@@ -67,6 +69,9 @@ export default function LoginPage() {
                 required
               />
             </div>
+            {error && (
+              <p className="text-sm text-red-600">E-mail ou senha inválidos</p>
+            )}
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Entrando..." : "Entrar"}
             </Button>

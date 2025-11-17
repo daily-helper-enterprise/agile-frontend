@@ -3,16 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/auth-context";
 
-type SidebarProps = {
-  userRole?: "user" | "scrum-master";
-};
-
-export function Sidebar({ userRole = "user" }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { user, logout } = useAuth();
 
   const navItems = [
     {
@@ -31,13 +28,13 @@ export function Sidebar({ userRole = "user" }: SidebarProps) {
       label: "Gerenciar",
       href: "/manage",
       icon: <Settings className="h-5 w-5" />,
-      visible: userRole === "scrum-master",
+      visible: user?.role === "scrum-master",
     },
   ];
 
   const handleLogout = () => {
     if (confirm("Tem certeza que deseja sair?")) {
-      router.push("/login");
+      logout();
     }
   };
 
@@ -81,10 +78,10 @@ export function Sidebar({ userRole = "user" }: SidebarProps) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground truncate">
-              John Doe
+              {user?.name}
             </p>
             <p className="text-xs text-muted-foreground capitalize">
-              {userRole.replace("-", " ")}
+              {user?.role.replace("-", " ")}
             </p>
           </div>
         </div>

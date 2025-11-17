@@ -1,12 +1,12 @@
-import { Sidebar } from "@/components/sidebar";
+"use client";
+
+import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { Card } from "@/components/ui/card";
 import { Users, BarChart3, Settings } from "lucide-react";
 
 export default function ManagePage() {
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar userRole="scrum-master" />
-
+    <AuthenticatedLayout>
       <div className="flex-1">
         <header className="border-b border-border bg-card">
           <div className="container mx-auto px-6 py-6">
@@ -63,6 +63,6 @@ export default function ManagePage() {
           </div>
         </main>
       </div>
-    </div>
+    </AuthenticatedLayout>
   );
 }

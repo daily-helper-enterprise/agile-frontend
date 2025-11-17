@@ -4,7 +4,8 @@ import { useState, useMemo } from "react";
 import { KanbanBoard } from "@/components/kanban-board";
 import { AddCardsDialog } from "@/components/add-cards-dialog";
 import { PageHeader } from "@/components/page-header";
-import { Sidebar } from "@/components/sidebar";
+import { AuthenticatedLayout } from "@/components/authenticated-layout";
+import { useAuth } from "@/contexts/auth-context";
 import type { FilterState } from "@/components/task-filter";
 
 export type Card = {
@@ -23,9 +24,9 @@ export type BoardData = {
   blockers: Card[];
 };
 
-export const CURRENT_USER = "John Doe";
-
 export default function Page() {
+  const { user } = useAuth();
+
   const [boardData, setBoardData] = useState<BoardData>({
     done: [
       {
@@ -174,10 +175,8 @@ export default function Page() {
   }, [boardData]);
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar userRole="scrum-master" />
-
-      <div className="flex-1 flex flex-col">
+    <AuthenticatedLayout>
+      <div className="flex flex-col min-h-screen">
         <PageHeader
           onAddCards={() => setIsDialogOpen(true)}
           availableAuthors={availableAuthors}
@@ -189,6 +188,7 @@ export default function Page() {
             data={filteredBoardData}
             onEditCard={handleEditCard}
             onDeleteCard={handleDeleteCard}
+            currentUser={user?.name || ""}
           />
         </main>
       </div>
@@ -198,6 +198,6 @@ export default function Page() {
         onOpenChange={setIsDialogOpen}
         onSubmit={handleAddCards}
       />
-    </div>
+    </AuthenticatedLayout>
   );
 }
