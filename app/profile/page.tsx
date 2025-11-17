@@ -1,6 +1,6 @@
-import { Sidebar } from "@/components/sidebar"
-import { User, Mail, Calendar } from "lucide-react"
-import { Card } from "@/components/ui/card"
+import { Sidebar } from "@/components/sidebar";
+import { User, Mail, Calendar } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export default function ProfilePage() {
   return (
@@ -10,8 +10,10 @@ export default function ProfilePage() {
       <div className="flex-1">
         <header className="border-b border-border bg-card">
           <div className="container mx-auto px-6 py-6">
-            <h1 className="text-3xl font-bold text-foreground">My Profile</h1>
-            <p className="text-muted-foreground mt-1">View and manage your profile information</p>
+            <h1 className="text-3xl font-bold text-foreground">Meu Perfil</h1>
+            <p className="text-muted-foreground mt-1">
+              Visualizar e gerenciar suas informações de perfil
+            </p>
           </div>
         </header>
 
@@ -34,12 +36,12 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Calendar className="h-5 w-5" />
-                <span>Joined January 2024</span>
+                <span>Entrou em Janeiro de 2024</span>
               </div>
             </div>
           </Card>
         </main>
       </div>
     </div>
-  )
+  );
 }
