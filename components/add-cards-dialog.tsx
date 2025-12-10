@@ -65,7 +65,6 @@ export function AddCardsDialog({
       blockers: filterNonEmpty(blockersCards),
     });
 
-    // Reset form
     setDoneCards([{ id: crypto.randomUUID(), title: "", description: "" }]);
     setWillDoCards([{ id: crypto.randomUUID(), title: "", description: "" }]);
     setBlockersCards([{ id: crypto.randomUUID(), title: "", description: "" }]);

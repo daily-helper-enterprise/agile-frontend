@@ -24,7 +24,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, LogOut } from "lucide-react";
 import type { UserTeam } from "@/lib/types";
-import type { UserTeam } from "@/lib/types";
 
 interface Board {
   id: number;
@@ -42,14 +41,12 @@ export default function BoardsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [boards, setBoards] = useState<UserTeam[]>([]);
 
-  // Sync local boards state when user data updates
   useEffect(() => {
     if (user?.teams) {
       setBoards(user.teams);
     }
   }, [user]);
 
-  // Refresh boards from API to ensure newly created boards appear
   useEffect(() => {
     const refreshBoards = async () => {
       if (!token) return;
@@ -78,7 +75,6 @@ export default function BoardsPage() {
       setNewBoardName("");
       setIsCreateDialogOpen(false);
 
-      // Add the new board locally so it appears immediately
       setBoards((prev) => [
         ...prev,
         {
@@ -89,7 +85,6 @@ export default function BoardsPage() {
         },
       ]);
 
-      // Refresh user context to update sidebar visibility
       await refreshUser();
 
       router.push(`/board/${newBoard.id}`);

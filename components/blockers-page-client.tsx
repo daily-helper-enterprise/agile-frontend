@@ -33,12 +33,10 @@ export function BlockersPageClient({ boardId }: { boardId: string }) {
   const [allCards, setAllCards] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch all cards from the API
   useEffect(() => {
     const fetchCards = async () => {
       try {
         setIsLoading(true);
-        // Use 1 year window if no date range selected
         const now = new Date();
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(now.getFullYear() - 1);
@@ -54,7 +52,6 @@ export function BlockersPageClient({ boardId }: { boardId: string }) {
           endOfDay.toISOString()
         );
 
-        // Extract only blockers (WHAT_I_DID_TODAY)
         setAllCards(data.blockers || []);
       } catch (error) {
         console.error("Erro ao buscar bloqueios:", error);
@@ -66,7 +63,6 @@ export function BlockersPageClient({ boardId }: { boardId: string }) {
     fetchCards();
   }, [boardId, dateRange]);
 
-  // All blockers are already filtered by date from the API
   const filteredBlockers = allCards;
 
   const resolvedCount = filteredBlockers.filter((b) => b.resolved).length;

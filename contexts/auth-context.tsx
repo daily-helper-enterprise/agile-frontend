@@ -30,10 +30,6 @@ import { useRouter, usePathname } from "next/navigation";
 import { authApi, STORAGE_KEYS } from "@/lib/api";
 import type { User } from "@/lib/types";
 
-// -----------------------------------------------------------------------------
-// Context Type Definition
-// -----------------------------------------------------------------------------
-
 /**
  * Authentication context type
  * Defines all available auth state and methods
@@ -60,19 +56,11 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
-// -----------------------------------------------------------------------------
-// Context Creation
-// -----------------------------------------------------------------------------
-
 /**
  * Authentication context instance
  * Use useAuth() hook to access this context
  */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// -----------------------------------------------------------------------------
-// Provider Component
-// -----------------------------------------------------------------------------
 
 /**
  * Authentication Provider Component
@@ -84,18 +72,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  * </AuthProvider>
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // State for user data and authentication token
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Navigation hooks
   const router = useRouter();
   const pathname = usePathname();
 
-  // ---------------------------------------------------------------------------
-  // Initialize auth state from localStorage on mount
-  // ---------------------------------------------------------------------------
   useEffect(() => {
     const initAuth = async () => {
       const storedToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
@@ -108,7 +91,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(userData);
           }
         } catch (error) {
-          // Token is invalid, clear it
           localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
         }
       }
@@ -119,27 +101,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth();
   }, []);
 
-  // ---------------------------------------------------------------------------
-  // Handle redirect logic based on authentication state
-  // ---------------------------------------------------------------------------
   useEffect(() => {
     if (isLoading) return;
 
     const isAuthPage = pathname === "/login" || pathname === "/register";
 
-    // Redirect to login if accessing protected route while not authenticated
     if (!token && !isAuthPage) {
       router.push("/login");
-    }
-    // Redirect to boards if accessing auth pages while already authenticated
-    else if (token && isAuthPage) {
+    } else if (token && isAuthPage) {
       router.push("/boards");
     }
   }, [token, pathname, isLoading]);
-
-  // ---------------------------------------------------------------------------
-  // Authentication Methods
-  // ---------------------------------------------------------------------------
 
   /**
    * Logs in user with username and password
@@ -152,17 +124,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (username: string, password: string) => {
     const response = await authApi.login({ username, password });
 
-    // Store authentication token
     localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token);
     setToken(response.token);
 
-    // Fetch user data
     const userData = await authApi.validateToken();
     if (userData) {
       setUser(userData);
     }
 
-    // Navigate to boards selection
     router.push("/boards");
   };
 
@@ -189,22 +158,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     });
 
-    // Store authentication token
     localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token);
     setToken(response.token);
 
-    // Set user from response
     if (response.user) {
       setUser(response.user);
     } else {
-      // Fetch user data if not in response
       const userData = await authApi.validateToken();
       if (userData) {
         setUser(userData);
       }
     }
 
-    // Navigate to boards selection
     router.push("/boards");
   };
 
@@ -213,14 +178,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * Clears all stored authentication data and redirects to login
    */
   const logout = () => {
-    // Clear stored token
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
 
-    // Clear state
     setToken(null);
     setUser(null);
 
-    // Redirect to login page
     router.push("/login");
   };
 
@@ -239,10 +201,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // ---------------------------------------------------------------------------
-  // Render Provider
-  // ---------------------------------------------------------------------------
-
   return (
     <AuthContext.Provider
       value={{ user, token, login, register, logout, refreshUser, isLoading }}
@@ -251,10 +209,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
-// -----------------------------------------------------------------------------
-// Hook for consuming auth context
-// -----------------------------------------------------------------------------
 
 /**
  * Hook to access authentication context

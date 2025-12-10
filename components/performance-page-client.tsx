@@ -17,7 +17,7 @@ import {
   AlertCircle,
   TrendingUp,
 } from "lucide-react";
-import { format, eachDayOfInterval, subDays, parseISO } from "date-fns";
+import { format, eachDayOfInterval, subDays } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import Link from "next/link";
 import { cardsApi, boardsApi } from "@/lib/api";
@@ -72,7 +72,6 @@ export function PerformancePageClient({ boardId }: { boardId: string }) {
   const [availableAuthors, setAvailableAuthors] = useState<string[]>([]);
   const [selectedAuthor, setSelectedAuthor] = useState<string>("all");
 
-  // Fetch board details to get available authors
   useEffect(() => {
     const loadBoardDetails = async () => {
       try {
@@ -91,12 +90,10 @@ export function PerformancePageClient({ boardId }: { boardId: string }) {
     loadBoardDetails();
   }, [boardId]);
 
-  // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        // Use 1 year window if no date range selected
         const now = new Date();
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(now.getFullYear() - 1);
@@ -123,7 +120,6 @@ export function PerformancePageClient({ boardId }: { boardId: string }) {
     fetchData();
   }, [boardId, dateRange]);
 
-  // Filter data by selected author
   const filteredBoardData = useMemo(() => {
     if (selectedAuthor === "all") return boardData;
 
@@ -138,12 +134,10 @@ export function PerformancePageClient({ boardId }: { boardId: string }) {
     };
   }, [boardData, selectedAuthor]);
 
-  // Calculate total tasks completed (only WHAT_I_DID_YESTERDAY - done column)
   const totalTasks = useMemo(() => {
     return filteredBoardData.done.length;
   }, [filteredBoardData]);
 
-  // Calculate tasks per day from real data
   const mockTasksPerDay: TaskData[] = useMemo(() => {
     if (!dateRange?.from || !dateRange?.to) return [];
 

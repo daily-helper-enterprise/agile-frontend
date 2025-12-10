@@ -1,16 +1,19 @@
-"use client"
+"use client";
 
-import type { ReactNode } from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { Sidebar } from "./sidebar"
+import type { ReactNode } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { Sidebar } from "./sidebar";
 
 interface AuthenticatedLayoutProps {
-  children: ReactNode
-  boardId?: string // Added boardId prop to pass to Sidebar
+  children: ReactNode;
+  boardId?: string;
 }
 
-export function AuthenticatedLayout({ children, boardId }: AuthenticatedLayoutProps) {
-  const { isLoading } = useAuth()
+export function AuthenticatedLayout({
+  children,
+  boardId,
+}: AuthenticatedLayoutProps) {
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -20,13 +23,13 @@ export function AuthenticatedLayout({ children, boardId }: AuthenticatedLayoutPr
           <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <Sidebar boardId={boardId} /> {/* Pass boardId to Sidebar */}
+      <Sidebar boardId={boardId} />
       <main className="flex-1 ml-64">{children}</main>
     </div>
-  )
+  );
 }

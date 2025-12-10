@@ -1,24 +1,3 @@
-/**
- * =============================================================================
- * BOARD PAGE
- * =============================================================================
- * Main task board page displaying the Kanban board for a specific board.
- *
- * Features:
- * - Three-column Kanban view (Done, Will Do, Blockers)
- * - Add/Edit/Delete cards functionality
- * - Filter by date range and author
- * - Default filter set to today's date
- * - Real-time board data management
- *
- * URL: /board/[id]
- *
- * INTEGRATION NOTES:
- * - Replace mock data with API calls from lib/api.ts
- * - Board data should be fetched on mount and updated after mutations
- * =============================================================================
- */
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -32,14 +11,6 @@ import { useParams } from "next/navigation";
 import type { FilterState } from "@/components/task-filter";
 import type { Card, Column, BoardData, CardType } from "@/lib/types";
 
-// -----------------------------------------------------------------------------
-// Page Component
-// -----------------------------------------------------------------------------
-
-/**
- * Board page component
- * Uses useParams to get the board ID from the URL
- */
 export default function BoardPage() {
   const params = useParams();
   const boardId = params.id as string;
@@ -47,20 +18,11 @@ export default function BoardPage() {
   return <BoardPageClient boardId={boardId} />;
 }
 
-// -----------------------------------------------------------------------------
-// Client Component
-// -----------------------------------------------------------------------------
-
 function BoardPageClient({ boardId }: { boardId: string }) {
   const { user } = useAuth();
 
-  // Initialize date filter to today
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
-  // ---------------------------------------------------------------------------
-  // Board Data State
-  // ---------------------------------------------------------------------------
   const [boardData, setBoardData] = useState<BoardData>({
     done: [],
     willDo: [],
@@ -69,16 +31,13 @@ function BoardPageClient({ boardId }: { boardId: string }) {
   const [isLoadingBoard, setIsLoadingBoard] = useState(true);
   const [availableAuthors, setAvailableAuthors] = useState<string[]>([]);
 
-  // Dialog state for adding cards
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Filter state with today as default
   const [filters, setFilters] = useState<FilterState>({
     dateRange: { from: today, to: today },
     authors: [],
   });
 
-  // Fetch board details to get available authors
   useEffect(() => {
     const loadBoardDetails = async () => {
       try {
@@ -97,12 +56,10 @@ function BoardPageClient({ boardId }: { boardId: string }) {
     loadBoardDetails();
   }, [boardId]);
 
-  // Fetch board data when filters change
   useEffect(() => {
     const loadBoardData = async () => {
       try {
         setIsLoadingBoard(true);
-        // Use 1 year window if no date range selected
         const now = new Date();
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(now.getFullYear() - 1);
@@ -128,11 +85,6 @@ function BoardPageClient({ boardId }: { boardId: string }) {
     loadBoardData();
   }, [boardId, filters.dateRange]);
 
-  // ---------------------------------------------------------------------------
-  // Card Operation Handlers
-  // TODO: Replace with API calls from lib/api.ts
-  // ---------------------------------------------------------------------------
-
   /**
    * Adds new cards to the board
    * @param newCards - Cards organized by column
@@ -145,10 +97,8 @@ function BoardPageClient({ boardId }: { boardId: string }) {
     try {
       if (!user) return;
 
-      // Create cards for each column
       const createPromises: Promise<Card>[] = [];
 
-      // Map column names to CardType enum
       const columnToType: Record<string, CardType> = {
         done: "WHAT_I_DID_YESTERDAY",
         willDo: "WHAT_I_PRETEND_TO_DO",
@@ -174,7 +124,6 @@ function BoardPageClient({ boardId }: { boardId: string }) {
 
       await Promise.all(createPromises);
 
-      // Reload board data
       const startOfDay = new Date(filters.dateRange?.from || new Date());
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(filters.dateRange?.to || new Date());
@@ -208,7 +157,6 @@ function BoardPageClient({ boardId }: { boardId: string }) {
         ...updates,
       });
 
-      // Update local state
       setBoardData((prev) => ({
         ...prev,
         [column]: prev[column].map((card) =>
@@ -220,16 +168,10 @@ function BoardPageClient({ boardId }: { boardId: string }) {
     }
   };
 
-  /**
-   * Deletes a card from the board
-   * @param column - Column containing the card
-   * @param cardId - ID of the card to delete
-   */
   const handleDeleteCard = async (column: Column, cardId: number) => {
     try {
       await cardsApi.deleteCard(boardId, column, cardId);
       console.log("Card deletado:", cardId, column);
-      // Update local state
       setBoardData((prev) => ({
         ...prev,
         [column]: prev[column].filter((card) => card.id !== cardId),
@@ -239,10 +181,6 @@ function BoardPageClient({ boardId }: { boardId: string }) {
     }
   };
 
-  /**
-   * Toggles the resolved status of a blocker card
-   * @param cardId - ID of the blocker to toggle
-   */
   const handleToggleResolved = async (cardId: number) => {
     try {
       const card = boardData.blockers.find((c) => c.id === cardId);
@@ -252,7 +190,6 @@ function BoardPageClient({ boardId }: { boardId: string }) {
         resolved: !card.resolved,
       });
 
-      // Update local state
       setBoardData((prev) => ({
         ...prev,
         blockers: prev.blockers.map((card) =>
@@ -264,15 +201,10 @@ function BoardPageClient({ boardId }: { boardId: string }) {
     }
   };
 
-  // ---------------------------------------------------------------------------
-  // Filtered Board Data
-  // Apply date and author filters to all cards
-  // ---------------------------------------------------------------------------
   const filteredBoardData = useMemo(() => {
     const filterCards = (cards: Card[]) => {
       if (!cards) return [];
       return cards.filter((card) => {
-        // Apply author filter
         if (
           filters?.authors &&
           filters.authors.length > 0 &&
@@ -292,9 +224,6 @@ function BoardPageClient({ boardId }: { boardId: string }) {
     };
   }, [boardData, filters]);
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
   return (
     <AuthenticatedLayout boardId={boardId}>
       <div className="flex flex-col min-h-screen">

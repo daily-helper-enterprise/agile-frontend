@@ -2,7 +2,6 @@
 
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { Card } from "@/components/ui/card";
-import { Users, AlertCircle, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 
