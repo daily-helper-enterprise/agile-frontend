@@ -11,7 +11,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -24,42 +23,29 @@ import type { DateRange } from "react-day-picker";
 export type FilterState = {
   dateRange: DateRange | undefined;
   authors: string[];
-  cardTypes: ("done" | "willDo" | "blockers")[];
 };
 
 type TaskFilterProps = {
   availableAuthors: string[];
   onFilterChange: (filters: FilterState) => void;
+  initialDateRange?: DateRange;
 };
 
 export function TaskFilter({
   availableAuthors,
   onFilterChange,
+  initialDateRange,
 }: TaskFilterProps) {
   const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(
+    initialDateRange
+  );
   const [selectedAuthor, setSelectedAuthor] = useState<string>("");
-  const [selectedCardTypes, setSelectedCardTypes] = useState<
-    ("done" | "willDo" | "blockers")[]
-  >([]);
-
-  const cardTypes = [
-    { value: "done" as const, label: "Feito" },
-    { value: "willDo" as const, label: "A Fazer" },
-    { value: "blockers" as const, label: "Bloqueadores" },
-  ];
-
-  const toggleCardType = (type: "done" | "willDo" | "blockers") => {
-    setSelectedCardTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
-  };
 
   const handleApplyFilters = () => {
     onFilterChange({
       dateRange,
       authors: selectedAuthor ? [selectedAuthor] : [],
-      cardTypes: selectedCardTypes,
     });
     setOpen(false);
   };
@@ -67,23 +53,19 @@ export function TaskFilter({
   const handleClearFilters = () => {
     setDateRange(undefined);
     setSelectedAuthor("");
-    setSelectedCardTypes([]);
     onFilterChange({
       dateRange: undefined,
       authors: [],
-      cardTypes: [],
     });
   };
 
   const activeFilterCount =
-    (dateRange?.from || dateRange?.to ? 1 : 0) +
-    (selectedAuthor ? 1 : 0) +
-    (selectedCardTypes.length > 0 ? 1 : 0);
+    (dateRange?.from || dateRange?.to ? 1 : 0) + (selectedAuthor ? 1 : 0);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 bg-transparent">
           <Filter className="h-4 w-4" />
           Filtrar
           {activeFilterCount > 0 && (
@@ -128,7 +110,7 @@ export function TaskFilter({
               <Label>Autor</Label>
               <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione um autor" />
+                  <SelectValue placeholder="Selecionar um autor" />
                 </SelectTrigger>
                 <SelectContent>
                   {availableAuthors.map((author) => (
@@ -138,27 +120,6 @@ export function TaskFilter({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Tipo de Card</Label>
-              <div className="space-y-2">
-                {cardTypes.map((type) => (
-                  <div key={type.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={type.value}
-                      checked={selectedCardTypes.includes(type.value)}
-                      onCheckedChange={() => toggleCardType(type.value)}
-                    />
-                    <label
-                      htmlFor={type.value}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                    >
-                      {type.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 

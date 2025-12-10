@@ -16,8 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, X } from "lucide-react";
 import type { Card } from "@/app/page";
-
-const CURRENT_USER = "John Doe";
+import { useAuth } from "@/contexts/auth-context";
 
 type AddCardsDialogProps = {
   open: boolean;
@@ -36,6 +35,7 @@ export function AddCardsDialog({
   onOpenChange,
   onSubmit,
 }: AddCardsDialogProps) {
+  const { user } = useAuth();
   const [doneCards, setDoneCards] = useState<CardInput[]>([
     { id: crypto.randomUUID(), title: "", description: "" },
   ]);
@@ -54,7 +54,8 @@ export function AddCardsDialog({
           id,
           title,
           description: description.trim() || undefined,
-          createdBy: CURRENT_USER,
+          createdBy: user?.name || "Unknown User",
+          createdByEmail: user?.email,
           createdAt: new Date(),
         }));
 
@@ -74,10 +75,10 @@ export function AddCardsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Adicionar Cards ao Quadro</DialogTitle>
+          <DialogTitle>Adicionar Cards ao Board</DialogTitle>
           <DialogDescription>
-            Adicione múltiplos cards a cada coluna. Apenas cards com títulos
-            serão adicionados.
+            Adicione vários cards em cada coluna. Apenas cards com título serão
+            adicionados.
           </DialogDescription>
         </DialogHeader>
 
@@ -85,7 +86,7 @@ export function AddCardsDialog({
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="done">Feito</TabsTrigger>
             <TabsTrigger value="willDo">A Fazer</TabsTrigger>
-            <TabsTrigger value="blockers">Bloqueadores</TabsTrigger>
+            <TabsTrigger value="blockers">Bloqueios</TabsTrigger>
           </TabsList>
 
           <TabsContent value="done" className="space-y-4 mt-4">
@@ -108,7 +109,7 @@ export function AddCardsDialog({
             <CardInputList
               cards={blockersCards}
               setCards={setBlockersCards}
-              columnName="Bloqueadores"
+              columnName="Bloqueios"
             />
           </TabsContent>
         </Tabs>

@@ -1,3 +1,22 @@
+/**
+ * =============================================================================
+ * AUTHENTICATION CONTEXT
+ * =============================================================================
+ * Provides authentication state and methods throughout the application.
+ *
+ * This context handles:
+ * - User authentication state (logged in/out)
+ * - Token management (storage and retrieval)
+ * - Login/Register/Logout operations
+ * - Automatic redirect logic for protected routes
+ *
+ * INTEGRATION NOTES:
+ * - Replace mock implementations in lib/api.ts with actual API calls
+ * - Token is stored in localStorage for persistence
+ * - User data is also cached in localStorage for quick access
+ * =============================================================================
+ */
+
 "use client";
 
 import {
@@ -5,102 +24,203 @@ import {
   useContext,
   useState,
   useEffect,
-  ReactNode,
+  type ReactNode,
 } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { authApi, STORAGE_KEYS } from "@/lib/api";
+import type { User } from "@/lib/types";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: "member" | "scrum-master";
-}
+// -----------------------------------------------------------------------------
+// Context Type Definition
+// -----------------------------------------------------------------------------
 
+/**
+ * Authentication context type
+ * Defines all available auth state and methods
+ */
 interface AuthContextType {
+  /** Currently authenticated user or null if not logged in */
   user: User | null;
+  /** JWT/session token for API requests */
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  /** Authenticates user with username and password */
+  login: (username: string, password: string) => Promise<void>;
+  /** Creates new user account and logs in */
+  register: (
+    name: string,
+    username: string,
+    email: string,
+    password: string
+  ) => Promise<void>;
+  /** Logs out current user and clears session */
   logout: () => void;
+  /** True while checking authentication state on mount */
   isLoading: boolean;
 }
 
+// -----------------------------------------------------------------------------
+// Context Creation
+// -----------------------------------------------------------------------------
+
+/**
+ * Authentication context instance
+ * Use useAuth() hook to access this context
+ */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// -----------------------------------------------------------------------------
+// Provider Component
+// -----------------------------------------------------------------------------
+
+/**
+ * Authentication Provider Component
+ * Wrap your app with this provider to enable authentication throughout
+ *
+ * @example
+ * <AuthProvider>
+ *   <App />
+ * </AuthProvider>
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
+  // State for user data and authentication token
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Navigation hooks
   const router = useRouter();
   const pathname = usePathname();
 
-  // Load token from localStorage on mount
+  // ---------------------------------------------------------------------------
+  // Initialize auth state from localStorage on mount
+  // ---------------------------------------------------------------------------
   useEffect(() => {
-    const storedToken = localStorage.getItem("auth_token");
-    const storedUser = localStorage.getItem("auth_user");
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
+      if (storedToken) {
+        setToken(storedToken);
+        try {
+          const userData = await authApi.validateToken();
+          if (userData) {
+            setUser(userData);
+          }
+        } catch (error) {
+          // Token is invalid, clear it
+          localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+        }
+      }
 
-    setIsLoading(false);
+      setIsLoading(false);
+    };
+
+    initAuth();
   }, []);
 
-  // Redirect logic
+  // ---------------------------------------------------------------------------
+  // Handle redirect logic based on authentication state
+  // ---------------------------------------------------------------------------
   useEffect(() => {
-    if (!isLoading) {
-      const isAuthPage = pathname === "/login" || pathname === "/register";
+    if (isLoading) return;
 
-      if (!token && !isAuthPage) {
-        router.push("/login");
-      } else if (token && isAuthPage) {
-        router.push("/");
-      }
+    const isAuthPage = pathname === "/login" || pathname === "/register";
+
+    // Redirect to login if accessing protected route while not authenticated
+    if (!token && !isAuthPage) {
+      router.push("/login");
     }
-  }, [token, pathname, isLoading, router]);
+    // Redirect to boards if accessing auth pages while already authenticated
+    else if (token && isAuthPage) {
+      router.push("/boards");
+    }
+  }, [token, pathname, isLoading]);
 
-  const login = async (email: string, password: string) => {
-    // Mock authentication - replace with real API call
-    const mockToken = `mock_token_${Date.now()}`;
-    const mockUser: User = {
-      id: "1",
-      name: "John Doe",
-      email,
-      role: email.includes("scrum") ? "scrum-master" : "member",
-    };
+  // ---------------------------------------------------------------------------
+  // Authentication Methods
+  // ---------------------------------------------------------------------------
 
-    localStorage.setItem("auth_token", mockToken);
-    localStorage.setItem("auth_user", JSON.stringify(mockUser));
+  /**
+   * Logs in user with username and password
+   * On success: stores token and user data, redirects to boards page
+   *
+   * @param username - User's username
+   * @param password - User's password
+   * @throws Error if authentication fails
+   */
+  const login = async (username: string, password: string) => {
+    const response = await authApi.login({ username, password });
 
-    setToken(mockToken);
-    setUser(mockUser);
+    // Store authentication token
+    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token);
+    setToken(response.token);
+
+    // Fetch user data
+    const userData = await authApi.validateToken();
+    if (userData) {
+      setUser(userData);
+    }
+
+    // Navigate to boards selection
+    router.push("/boards");
   };
 
-  const register = async (name: string, email: string, password: string) => {
-    // Mock registration - replace with real API call
-    const mockToken = `mock_token_${Date.now()}`;
-    const mockUser: User = {
-      id: Date.now().toString(),
+  /**
+   * Registers a new user account
+   * On success: automatically logs in and redirects to boards page
+   *
+   * @param name - User's full name
+   * @param username - User's username
+   * @param email - User's email address
+   * @param password - User's password
+   * @throws Error if registration fails
+   */
+  const register = async (
+    name: string,
+    username: string,
+    email: string,
+    password: string
+  ) => {
+    const response = await authApi.register({
       name,
+      username,
       email,
-      role: "member",
-    };
+      password,
+    });
 
-    localStorage.setItem("auth_token", mockToken);
-    localStorage.setItem("auth_user", JSON.stringify(mockUser));
+    // Store authentication token
+    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token);
+    setToken(response.token);
 
-    setToken(mockToken);
-    setUser(mockUser);
+    // Fetch user data
+    const userData = await authApi.validateToken();
+    if (userData) {
+      setUser(userData);
+    }
+    setUser(response.user);
+
+    // Navigate to boards selection
+    router.push("/boards");
   };
 
+  /**
+   * Logs out the current user
+   * Clears all stored authentication data and redirects to login
+   */
   const logout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_user");
+    // Clear stored token
+    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+
+    // Clear state
     setToken(null);
     setUser(null);
+
+    // Redirect to login page
     router.push("/login");
   };
+
+  // ---------------------------------------------------------------------------
+  // Render Provider
+  // ---------------------------------------------------------------------------
 
   return (
     <AuthContext.Provider
@@ -111,10 +231,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Hook for consuming auth context
+// -----------------------------------------------------------------------------
+
+/**
+ * Hook to access authentication context
+ * Must be used within an AuthProvider
+ *
+ * @returns Authentication context with user, token, and auth methods
+ * @throws Error if used outside of AuthProvider
+ *
+ * @example
+ * const { user, login, logout } = useAuth()
+ */
 export function useAuth() {
   const context = useContext(AuthContext);
+
   if (context === undefined) {
-    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
+    throw new Error("useAuth must be used within an AuthProvider");
   }
+
   return context;
 }

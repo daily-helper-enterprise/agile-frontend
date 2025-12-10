@@ -28,19 +28,19 @@ export function EditCardDialog({
   onOpenChange,
   onSave,
 }: EditCardDialogProps) {
-  const [title, setTitle] = useState(card.title);
+  const [title, setTitle] = useState(card.title || "");
   const [description, setDescription] = useState(card.description || "");
 
   useEffect(() => {
-    setTitle(card.title);
+    setTitle(card.title || "");
     setDescription(card.description || "");
   }, [card]);
 
   const handleSave = () => {
-    if (title.trim()) {
+    if (title?.trim()) {
       onSave({
         title: title.trim(),
-        description: description.trim() || undefined,
+        description: description?.trim() || "",
       });
     }
   };
@@ -51,7 +51,7 @@ export function EditCardDialog({
         <DialogHeader>
           <DialogTitle>Editar Card</DialogTitle>
           <DialogDescription>
-            Faça alterações nos detalhes do seu card.
+            Faça alterações nos detalhes do card.
           </DialogDescription>
         </DialogHeader>
 
@@ -73,7 +73,7 @@ export function EditCardDialog({
               placeholder="Digite a descrição do card (opcional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={3}
+              rows={4}
             />
           </div>
         </div>
@@ -82,7 +82,7 @@ export function EditCardDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={handleSave} disabled={!title.trim()}>
+          <Button onClick={handleSave} disabled={!title?.trim()}>
             Salvar Alterações
           </Button>
         </DialogFooter>
