@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -55,8 +55,8 @@ export default function BoardsPage() {
       setIsCreateDialogOpen(false);
       router.push(`/board/${newBoard.id}`);
     } catch (error) {
-      console.error("Error creating board:", error);
-      alert("Failed to create board. Please try again.");
+      console.error("Erro ao criar board:", error);
+      alert("Falha ao criar board. Por favor, tente novamente.");
     } finally {
       setIsCreating(false);
     }
@@ -76,7 +76,7 @@ export default function BoardsPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-          <p className="mt-4 text-slate-600">Loading...</p>
+          <p className="mt-4 text-slate-600">Carregando...</p>
         </div>
       </div>
     );
@@ -92,9 +92,9 @@ export default function BoardsPage() {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-slate-900">
-              Board Selection
+              Seleção de Boards
             </h2>
-            <p className="text-sm text-slate-600">Welcome, {user.name}</p>
+            <p className="text-sm text-slate-600">Bem-vindo, {user.name}</p>
           </div>
           <Button
             variant="outline"
@@ -102,7 +102,7 @@ export default function BoardsPage() {
             className="gap-2 bg-transparent"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            Sair
           </Button>
         </div>
       </header>
@@ -112,10 +112,10 @@ export default function BoardsPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-4xl font-bold text-slate-900 mb-2">
-                Your Boards
+                Seus Boards
               </h1>
               <p className="text-slate-600">
-                Select a board to view or create a new one
+                Selecione um board para visualizar ou crie um novo
               </p>
             </div>
             <Button
@@ -124,7 +124,7 @@ export default function BoardsPage() {
               className="gap-2"
             >
               <Plus className="h-5 w-5" />
-              Create Board
+              Criar Board
             </Button>
           </div>
 
@@ -163,8 +163,8 @@ export default function BoardsPage() {
           {userBoards.length === 0 && (
             <div className="text-center py-12">
               <p className="text-slate-600 mb-4">
-                You're not a member of any boards yet. Create your first board
-                to get started.
+                Você ainda não é membro de nenhum board. Crie seu primeiro board
+                para começar.
               </p>
               <Button
                 onClick={() => setIsCreateDialogOpen(true)}
@@ -172,7 +172,7 @@ export default function BoardsPage() {
                 className="gap-2"
               >
                 <Plus className="h-5 w-5" />
-                Create Your First Board
+                Criar Seu Primeiro Board
               </Button>
             </div>
           )}
@@ -182,18 +182,18 @@ export default function BoardsPage() {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Board</DialogTitle>
+            <DialogTitle>Criar Novo Board</DialogTitle>
             <DialogDescription>
-              Create a new board and become its Scrum Master. You'll have full
-              control over board management.
+              Crie um novo board e torne-se seu Scrum Master. Você terá controle
+              total sobre o gerenciamento do board.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="space-y-2">
-              <Label htmlFor="board-name">Board Name</Label>
+              <Label htmlFor="board-name">Nome do Board</Label>
               <Input
                 id="board-name"
-                placeholder="e.g., Product Development"
+                placeholder="ex: Desenvolvimento de Produto"
                 value={newBoardName}
                 onChange={(e) => setNewBoardName(e.target.value)}
                 onKeyDown={(e) => {
@@ -210,13 +210,13 @@ export default function BoardsPage() {
               onClick={() => setIsCreateDialogOpen(false)}
               disabled={isCreating}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button
               onClick={handleCreateBoard}
               disabled={!newBoardName.trim() || isCreating}
             >
-              {isCreating ? "Creating..." : "Create Board"}
+              {isCreating ? "Criando..." : "Criar Board"}
             </Button>
           </DialogFooter>
         </DialogContent>

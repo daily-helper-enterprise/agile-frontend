@@ -1,4 +1,4 @@
-/**
+﻿/**
  * =============================================================================
  * KANBAN BOARD COMPONENT
  * =============================================================================
@@ -66,7 +66,7 @@ export function KanbanBoard({
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Done Column - Completed tasks */}
       <KanbanColumn
-        title="Done"
+        title="Feito"
         columnKey="done"
         cards={data.done}
         icon={<CheckCircle2 className="h-5 w-5" />}
@@ -79,7 +79,7 @@ export function KanbanBoard({
 
       {/* Will Do Column - Planned tasks */}
       <KanbanColumn
-        title="Will Do"
+        title="A Fazer"
         columnKey="willDo"
         cards={data.willDo}
         icon={<Clock className="h-5 w-5" />}
@@ -92,7 +92,7 @@ export function KanbanBoard({
 
       {/* Blockers Column - Blocking issues */}
       <KanbanColumn
-        title="Blockers"
+        title="Bloqueios"
         columnKey="blockers"
         cards={data.blockers}
         icon={<AlertCircle className="h-5 w-5" />}

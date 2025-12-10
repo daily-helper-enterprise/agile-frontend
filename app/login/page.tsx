@@ -29,7 +29,7 @@ export default function LoginPage() {
     try {
       await login(username, password);
     } catch (err) {
-      setError("Invalid username or password");
+      setError("Usuário ou senha inválidos");
       setIsLoading(false);
     }
   };
@@ -39,16 +39,16 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-2">
           <CardTitle className="text-2xl font-bold text-center">
-            Welcome Back
+            Bem-vindo de Volta
           </CardTitle>
           <CardDescription className="text-center">
-            Sign in to your account to continue
+            Entre na sua conta para continuar
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Usuário</Label>
               <Input
                 id="username"
                 type="text"
@@ -59,7 +59,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
@@ -71,18 +71,16 @@ export default function LoginPage() {
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">
-              Don't have an account?{" "}
-            </span>
+            <span className="text-muted-foreground">Não tem uma conta? </span>
             <Link
               href="/register"
               className="font-medium text-primary hover:underline"
             >
-              Sign up
+              Registre-se
             </Link>
           </div>
         </CardContent>

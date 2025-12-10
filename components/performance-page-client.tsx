@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo, useEffect } from "react";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
@@ -84,7 +84,7 @@ export function PerformancePageClient({ boardId }: { boardId: string }) {
           setAvailableAuthors(memberNames.sort());
         }
       } catch (error) {
-        console.error("Error loading board details:", error);
+        console.error("Erro ao carregar detalhes do board:", error);
       }
     };
 
@@ -114,7 +114,7 @@ export function PerformancePageClient({ boardId }: { boardId: string }) {
 
         setBoardData(data);
       } catch (error) {
-        console.error("Error fetching performance data:", error);
+        console.error("Erro ao buscar dados de desempenho:", error);
       } finally {
         setIsLoading(false);
       }

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * =============================================================================
  * SIDEBAR COMPONENT
  * =============================================================================
@@ -70,19 +70,19 @@ export function Sidebar({ boardId }: SidebarProps) {
   // ---------------------------------------------------------------------------
   const navItems = [
     {
-      label: "My Boards",
+      label: "Meus Boards",
       href: "/boards",
       icon: <LayoutGrid className="h-5 w-5" />,
       visible: true, // Always visible
     },
     {
-      label: "My Profile",
+      label: "Meu Perfil",
       href: "/profile",
       icon: <User className="h-5 w-5" />,
       visible: true, // Always visible
     },
     {
-      label: "Manage",
+      label: "Gerenciar",
       href: boardId ? `/board/${boardId}/manage` : "/manage",
       icon: <Settings className="h-5 w-5" />,
       // Only visible if viewing a board AND user is Scrum Master
@@ -98,7 +98,7 @@ export function Sidebar({ boardId }: SidebarProps) {
    * Handles logout with confirmation
    */
   const handleLogout = () => {
-    if (confirm("Are you sure you want to logout?")) {
+    if (confirm("Tem certeza que deseja sair?")) {
       logout();
     }
   };
@@ -112,7 +112,7 @@ export function Sidebar({ boardId }: SidebarProps) {
       {/* Header with app branding */}
       <div className="p-6 border-b border-border">
         <h2 className="text-xl font-bold text-foreground">Kanban Board</h2>
-        <p className="text-sm text-muted-foreground mt-1">Project Management</p>
+        <p className="text-sm text-muted-foreground mt-1">Gerenciamento de Projetos</p>
       </div>
 
       {/* Navigation Links */}
@@ -164,7 +164,7 @@ export function Sidebar({ boardId }: SidebarProps) {
           className="w-full justify-start gap-3 text-base bg-transparent"
         >
           <LogOut className="h-5 w-5" />
-          Logout
+          Sair
         </Button>
       </div>
     </aside>

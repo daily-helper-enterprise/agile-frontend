@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type React from "react";
 
@@ -52,7 +52,7 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
 
         setTeamMembers(foundBoard?.members || []);
       } catch (error) {
-        console.error("Error loading board data:", error);
+        console.error("Erro ao carregar dados do board:", error);
       }
     };
 
@@ -74,7 +74,7 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
     try {
       const memberId = parseInt(newMemberId);
       if (isNaN(memberId)) {
-        alert("Please enter a valid member ID");
+        alert("Por favor, insira um ID de membro válido");
         return;
       }
 
@@ -90,8 +90,8 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
       setNewMemberId("");
       setIsAddDialogOpen(false);
     } catch (error) {
-      console.error("Error adding member:", error);
-      alert("Failed to add member. Please try again.");
+      console.error("Erro ao adicionar membro:", error);
+      alert("Falha ao adicionar membro. Por favor, tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +101,7 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
     if (!board) return;
 
     if (
-      confirm("Are you sure you want to remove this member from the board?")
+      confirm("Tem certeza que deseja remover este membro do board?")
     ) {
       try {
         await teamApi.removeMember(board.id, parseInt(memberId));
@@ -117,8 +117,8 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
             : null
         );
       } catch (error) {
-        console.error("Error removing member:", error);
-        alert("Failed to remove member. Please try again.");
+        console.error("Erro ao remover membro:", error);
+        alert("Falha ao remover membro. Por favor, tente novamente.");
       }
     }
   };
@@ -137,10 +137,10 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
                 </Link>
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">
-                    Team Members
+                    Membros da Equipe
                   </h1>
                   <p className="text-sm text-muted-foreground">
-                    Manage board members and permissions
+                    Gerenciar membros do board e permissões
                   </p>
                 </div>
               </div>
@@ -153,19 +153,19 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
                   <DialogTrigger asChild>
                     <Button>
                       <UserPlus className="h-4 w-4 mr-2" />
-                      Add Member
+                      Adicionar Membro
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Add Team Member</DialogTitle>
+                      <DialogTitle>Adicionar Membro da Equipe</DialogTitle>
                       <DialogDescription>
-                        Enter the ID of the user you want to add to this board.
+                        Insira o ID do usuário que deseja adicionar a este board.
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleAddMember} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="memberId">Member ID</Label>
+                        <Label htmlFor="memberId">ID do Membro</Label>
                         <Input
                           id="memberId"
                           type="number"
@@ -181,10 +181,10 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
                           variant="outline"
                           onClick={() => setIsAddDialogOpen(false)}
                         >
-                          Cancel
+                          Cancelar
                         </Button>
                         <Button type="submit" disabled={isLoading}>
-                          {isLoading ? "Adding..." : "Add Member"}
+                          {isLoading ? "Adicionando..." : "Adicionar Membro"}
                         </Button>
                       </div>
                     </form>
@@ -248,10 +248,10 @@ export default function TeamPageClient({ boardId }: { boardId: string }) {
               <div className="text-center py-12">
                 <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">
-                  No team members yet
+                  Nenhum membro da equipe ainda
                 </h3>
                 <p className="text-muted-foreground">
-                  Add members to start collaborating on this board.
+                  Adicione membros para começar a colaborar neste board.
                 </p>
               </div>
             )}

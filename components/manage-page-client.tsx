@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { AuthenticatedLayout } from "@/components/authenticated-layout"
 import { Card } from "@/components/ui/card"
@@ -11,8 +11,8 @@ export function ManagePageClient({ boardId }: { boardId: string }) {
       <div className="flex-1">
         <header className="border-b border-border bg-card">
           <div className="container mx-auto px-6 py-6">
-            <h1 className="text-3xl font-bold text-foreground">Manage</h1>
-            <p className="text-muted-foreground mt-1">Scrum master tools and team management</p>
+            <h1 className="text-3xl font-bold text-foreground">Gerenciar</h1>
+            <p className="text-muted-foreground mt-1">Ferramentas do scrum master e gerenciamento de equipe</p>
           </div>
         </header>
 
@@ -24,9 +24,9 @@ export function ManagePageClient({ boardId }: { boardId: string }) {
                   <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
                     <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground">Team Members</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Membros da Equipe</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">Manage team members and permissions</p>
+                <p className="text-muted-foreground text-sm">Gerenciar membros da equipe e permissões</p>
               </Card>
             </Link>
 
@@ -36,9 +36,9 @@ export function ManagePageClient({ boardId }: { boardId: string }) {
                   <div className="h-12 w-12 rounded-lg bg-red-500/10 flex items-center justify-center">
                     <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground">Blockers Report</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Relatório de Bloqueios</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">View all blockers in a time period</p>
+                <p className="text-muted-foreground text-sm">Visualize todos os bloqueios em um período</p>
               </Card>
             </Link>
 
@@ -48,9 +48,9 @@ export function ManagePageClient({ boardId }: { boardId: string }) {
                   <div className="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center">
                     <BarChart3 className="h-6 w-6 text-green-600 dark:text-green-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground">Performance</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Desempenho</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">View team performance and metrics</p>
+                <p className="text-muted-foreground text-sm">Visualize o desempenho da equipe e métricas</p>
               </Card>
             </Link>
           </div>

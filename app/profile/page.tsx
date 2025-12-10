@@ -1,20 +1,22 @@
-"use client"
+"use client";
 
-import { AuthenticatedLayout } from "@/components/authenticated-layout"
-import { useAuth } from "@/contexts/auth-context"
-import { User, Mail, Calendar } from "lucide-react"
-import { Card } from "@/components/ui/card"
+import { AuthenticatedLayout } from "@/components/authenticated-layout";
+import { useAuth } from "@/contexts/auth-context";
+import { User, Mail, Calendar } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export default function ProfilePage() {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   return (
     <AuthenticatedLayout>
       <div className="flex-1">
         <header className="border-b border-border bg-card">
           <div className="container mx-auto px-6 py-6">
-            <h1 className="text-3xl font-bold text-foreground">My Profile</h1>
-            <p className="text-muted-foreground mt-1">View and manage your profile information</p>
+            <h1 className="text-3xl font-bold text-foreground">Meu Perfil</h1>
+            <p className="text-muted-foreground mt-1">
+              Visualize e gerencie suas informações de perfil
+            </p>
           </div>
         </header>
 
@@ -25,7 +27,9 @@ export default function ProfilePage() {
                 <User className="h-10 w-10 text-primary" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground">{user?.name}</h2>
+                <h2 className="text-2xl font-bold text-foreground">
+                  {user?.name}
+                </h2>
                 <p className="text-muted-foreground">{user?.email}</p>
               </div>
             </div>
@@ -37,12 +41,12 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Calendar className="h-5 w-5" />
-                <span>Joined January 2024</span>
+                <span>Cadastrado em janeiro de 2024</span>
               </div>
             </div>
           </Card>
         </main>
       </div>
     </AuthenticatedLayout>
-  )
+  );
 }

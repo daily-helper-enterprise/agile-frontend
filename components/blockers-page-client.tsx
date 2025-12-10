@@ -57,7 +57,7 @@ export function BlockersPageClient({ boardId }: { boardId: string }) {
         // Extract only blockers (WHAT_I_DID_TODAY)
         setAllCards(data.blockers || []);
       } catch (error) {
-        console.error("Error fetching blockers:", error);
+        console.error("Erro ao buscar bloqueios:", error);
       } finally {
         setIsLoading(false);
       }
