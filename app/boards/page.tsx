@@ -1,9 +1,9 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { boardsApi } from "@/lib/api";
+import { authApi, boardsApi } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -23,6 +23,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, LogOut } from "lucide-react";
+import type { UserTeam } from "@/lib/types";
+import type { UserTeam } from "@/lib/types";
 
 interface Board {
   id: number;
@@ -32,15 +34,37 @@ interface Board {
 }
 
 export default function BoardsPage() {
-  const { user, isLoading, logout } = useAuth();
+  const { user, token, isLoading, logout, refreshUser } = useAuth();
   const router = useRouter();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const [boards, setBoards] = useState<UserTeam[]>([]);
 
-  // Get boards from user.teams
-  const userBoards = user?.teams || [];
+  // Sync local boards state when user data updates
+  useEffect(() => {
+    if (user?.teams) {
+      setBoards(user.teams);
+    }
+  }, [user]);
+
+  // Refresh boards from API to ensure newly created boards appear
+  useEffect(() => {
+    const refreshBoards = async () => {
+      if (!token) return;
+      try {
+        const refreshedUser = await authApi.validateToken();
+        if (refreshedUser?.teams) {
+          setBoards(refreshedUser.teams);
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar boards:", error);
+      }
+    };
+
+    refreshBoards();
+  }, [token]);
 
   const handleCreateBoard = async () => {
     if (!newBoardName.trim() || !user) return;
@@ -53,6 +77,21 @@ export default function BoardsPage() {
       });
       setNewBoardName("");
       setIsCreateDialogOpen(false);
+
+      // Add the new board locally so it appears immediately
+      setBoards((prev) => [
+        ...prev,
+        {
+          id: newBoard.id,
+          name: newBoard.name,
+          description: newBoard.description ?? null,
+          scrumMaster: true,
+        },
+      ]);
+
+      // Refresh user context to update sidebar visibility
+      await refreshUser();
+
       router.push(`/board/${newBoard.id}`);
     } catch (error) {
       console.error("Erro ao criar board:", error);
@@ -129,7 +168,7 @@ export default function BoardsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userBoards.map((board) => (
+            {boards.map((board) => (
               <Card
                 key={board.id}
                 className="hover:shadow-lg transition-shadow cursor-pointer"
@@ -160,7 +199,7 @@ export default function BoardsPage() {
             ))}
           </div>
 
-          {userBoards.length === 0 && (
+          {boards.length === 0 && (
             <div className="text-center py-12">
               <p className="text-slate-600 mb-4">
                 Você ainda não é membro de nenhum board. Crie seu primeiro board

@@ -54,6 +54,8 @@ interface AuthContextType {
   ) => Promise<void>;
   /** Logs out current user and clears session */
   logout: () => void;
+  /** Refreshes user data from server */
+  refreshUser: () => Promise<void>;
   /** True while checking authentication state on mount */
   isLoading: boolean;
 }
@@ -191,12 +193,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token);
     setToken(response.token);
 
-    // Fetch user data
-    const userData = await authApi.validateToken();
-    if (userData) {
-      setUser(userData);
+    // Set user from response
+    if (response.user) {
+      setUser(response.user);
+    } else {
+      // Fetch user data if not in response
+      const userData = await authApi.validateToken();
+      if (userData) {
+        setUser(userData);
+      }
     }
-    setUser(response.user);
 
     // Navigate to boards selection
     router.push("/boards");
@@ -218,13 +224,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push("/login");
   };
 
+  /**
+   * Refreshes user data from the server
+   * Useful when user data may have changed (e.g., after creating a board)
+   */
+  const refreshUser = async () => {
+    try {
+      const userData = await authApi.validateToken();
+      if (userData) {
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error("Erro ao refrescar usuário:", error);
+    }
+  };
+
   // ---------------------------------------------------------------------------
   // Render Provider
   // ---------------------------------------------------------------------------
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, register, logout, isLoading }}
+      value={{ user, token, login, register, logout, refreshUser, isLoading }}
     >
       {children}
     </AuthContext.Provider>

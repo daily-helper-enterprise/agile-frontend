@@ -47,19 +47,26 @@ export function Sidebar({ boardId }: SidebarProps) {
   // Get current user from auth context
   const { user, logout } = useAuth();
 
-  // Track if current user is the Scrum Master of the current board
+  // Track if current user is the Scrum Master of the current board or any board
   const [isScrumMaster, setIsScrumMaster] = useState(false);
 
   // ---------------------------------------------------------------------------
   // Check Scrum Master status when board or user changes
   // ---------------------------------------------------------------------------
   useEffect(() => {
-    if (boardId && user) {
-      // Check if user is Scrum Master of the current team/board
-      const currentTeam = user.teams?.find(
-        (team) => team.id.toString() === boardId
-      );
-      setIsScrumMaster(currentTeam?.scrumMaster || false);
+    if (user) {
+      if (boardId) {
+        // Check if user is Scrum Master of the current team/board
+        const currentTeam = user.teams?.find(
+          (team) => team.id.toString() === boardId
+        );
+        setIsScrumMaster(currentTeam?.scrumMaster || false);
+      } else {
+        // Check if user is Scrum Master of ANY board
+        const isAnyBoardMaster =
+          user.teams?.some((team) => team.scrumMaster) || false;
+        setIsScrumMaster(isAnyBoardMaster);
+      }
     } else {
       setIsScrumMaster(false);
     }
@@ -85,8 +92,8 @@ export function Sidebar({ boardId }: SidebarProps) {
       label: "Gerenciar",
       href: boardId ? `/board/${boardId}/manage` : "/manage",
       icon: <Settings className="h-5 w-5" />,
-      // Only visible if viewing a board AND user is Scrum Master
-      visible: boardId ? isScrumMaster : false,
+      // Only visible if user is Scrum Master (of current board or any board)
+      visible: isScrumMaster,
     },
   ];
 
@@ -112,7 +119,9 @@ export function Sidebar({ boardId }: SidebarProps) {
       {/* Header with app branding */}
       <div className="p-6 border-b border-border">
         <h2 className="text-xl font-bold text-foreground">Kanban Board</h2>
-        <p className="text-sm text-muted-foreground mt-1">Gerenciamento de Projetos</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Gerenciamento de Projetos
+        </p>
       </div>
 
       {/* Navigation Links */}

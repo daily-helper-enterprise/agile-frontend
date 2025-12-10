@@ -28,24 +28,23 @@ import { PageHeader } from "@/components/page-header";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 import { useAuth } from "@/contexts/auth-context";
 import { cardsApi, boardsApi } from "@/lib/api";
+import { useParams } from "next/navigation";
 import type { FilterState } from "@/components/task-filter";
 import type { Card, Column, BoardData, CardType } from "@/lib/types";
 
 // -----------------------------------------------------------------------------
-// Page Component (Server Component Wrapper)
+// Page Component
 // -----------------------------------------------------------------------------
 
 /**
- * Server component that extracts params and renders the client component
- * In Next.js 16, params is a Promise that must be awaited
+ * Board page component
+ * Uses useParams to get the board ID from the URL
  */
-export default async function BoardPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  return <BoardPageClient boardId={id} />;
+export default function BoardPage() {
+  const params = useParams();
+  const boardId = params.id as string;
+
+  return <BoardPageClient boardId={boardId} />;
 }
 
 // -----------------------------------------------------------------------------

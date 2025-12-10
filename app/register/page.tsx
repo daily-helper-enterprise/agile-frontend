@@ -43,7 +43,10 @@ export default function RegisterPage() {
     try {
       await register(name, username, email, password);
     } catch (err) {
-      setError("Falha ao criar conta");
+      const message =
+        err instanceof Error ? err.message : "Falha ao criar conta";
+      setError(message);
+    } finally {
       setIsLoading(false);
     }
   };
